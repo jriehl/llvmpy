@@ -1035,9 +1035,9 @@ class Constant(User):
     def string(strval): # dont_null_terminate=True
         return _make_value(_core.LLVMConstString(strval, 1))
 
-    @staticmethod
-    def stringz(strval): # dont_null_terminate=False
-        return _make_value(_core.LLVMConstString(strval, 0))
+    @classmethod
+    def stringz(cls, strval): # dont_null_terminate=False
+        return cls(_core.LLVMConstString(strval, 0))
 
     @staticmethod
     def array(ty, consts):
