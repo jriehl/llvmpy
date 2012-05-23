@@ -18,15 +18,15 @@ import llvm.ee as le
 # ______________________________________________________________________
 
 def main (*args, **kws):
-    m = lc.Module.new('demo_module')
+    m = lc.Module.new(b'demo_module')
     i8 = lc.Type.int(8)
     i32 = lc.Type.int(32)
     i8ptr = lc.Type.pointer(i8)
     puts_ty = lc.Type.function(i32, [i8ptr])
-    puts_decl = m.add_function(puts_ty, 'puts')
+    puts_decl = m.add_function(puts_ty, b'puts')
     hello_fn_ty = lc.Type.function(i32, [])
-    hello_fn = m.add_function(hello_fn_ty, 'hello_fn')
-    bb = hello_fn.append_basic_block('entry')
+    hello_fn = m.add_function(hello_fn_ty, b'hello_fn')
+    bb = hello_fn.append_basic_block(b'entry')
     builder = lc.Builder.new(bb)
 
     # Was having a devil of time using stringz(), since it returns a
@@ -36,23 +36,24 @@ def main (*args, **kws):
 
     # See: http://comments.gmane.org/gmane.comp.compilers.llvm.devel/28601
 
-    hello_str = lc.Constant.stringz('Hello, world.\n')
-    hello_var = m.add_global_variable(hello_str.type, 'msg')
+    hello_str = lc.Constant.stringz(b'Hello, world.\n')
+    hello_var = m.add_global_variable(hello_str.type, b'msg')
     # Required a patch to get this to work.
     # XXX Need to extend patch to other constant constructors in core.py.
     hello_var._set_initializer(hello_str)
 
     zero = lc.Constant.int(i32, 0)
-    cst = builder.gep(hello_var, [zero, zero], 'cst')
+    cst = builder.gep(hello_var, [zero, zero], b'cst')
     builder.call(puts_decl, [cst])
     builder.ret(zero)
-    print m
+    print(str(m.__str__()))
     ee = le.ExecutionEngine.new(m)
     ee.run_function(hello_fn, [])
 
 # ______________________________________________________________________
 
 if __name__ == "__main__":
+    import sys
     main(*sys.argv[1:])
 
 # ______________________________________________________________________
